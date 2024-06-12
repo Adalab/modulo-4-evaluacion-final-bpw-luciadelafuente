@@ -18,3 +18,11 @@ VALUES ("Hermione Granger", "female", "Gryffindor", "otter", "https://hips.hears
 
 INSERT INTO characters (name, gender, house, patronus, image)
 VALUES ("Ron Weasley", "male", "Gryffindor", "Jack Russell terrier", "https://static.wikia.nocookie.net/esharrypotter/images/e/e1/P1_Rony.jpg/revision/latest/scale-to-width-down/170?cb=20180719234118");
+
+CREATE TABLE usuarios_db (
+id int auto_increment primary key,
+email VARCHAR (45) not null,
+name VARCHAR (45) not null,
+address VARCHAR (45) not null,
+password VARCHAR (100) not null
+);
