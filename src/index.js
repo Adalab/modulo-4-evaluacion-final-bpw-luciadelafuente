@@ -7,18 +7,18 @@ const jwt = require('jsonwebtoken');
 
 require('dotenv').config();
 
+//Creo mi servidor
 const server = express();
 server.use(cors());
 server.use(express.json());
 
-const PORT = process.env.POST || 5000;
+const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () =>{
     console.log(`Server runnig in port: http://localhost:${PORT}`)
 });
 
-//Función para conectar con la base de datos
-
+//Función para conectar con mi base de datos
 async function getConnection () {
     const conn = await mysql.createConnection({
         host: process.env.DB_HOST,
@@ -32,7 +32,7 @@ async function getConnection () {
 };
 
 //Endpoint para obtener todos los personajes
-server.get('/characters', authenticateToken, async (req, res) => {
+server.get('/characters', async (req, res) => {
     try {
       const conn = await getConnection();
       const select = 'SELECT * FROM characters';
@@ -50,7 +50,7 @@ server.get('/characters', authenticateToken, async (req, res) => {
     }
   });
 
-//Endpoint para añadir un nuevo personaje
+//Endpoint para añadir un nuevo personaje y ejecuto la función authenticateToken para que sólo puedan crear un personaje nuevo los usuarios que están registrados y han hecho login, es decir, que tienen un token válido
 server.post('/characters', authenticateToken, async (req, res) => {
     try {
         const conn = await getConnection();
@@ -75,8 +75,8 @@ server.post('/characters', authenticateToken, async (req, res) => {
     }
 });
 
-// Endpoint para buscar un personaje por id
-server.get('/characters/:id', authenticateToken, async (req, res) => {
+// Endpoint para buscar un personaje por id 
+server.get('/characters/:id', async (req, res) => {
     try {
       const { id } = req.params;
       const conn = await getConnection();
@@ -95,7 +95,7 @@ server.get('/characters/:id', authenticateToken, async (req, res) => {
     }
   });
 
-//Endpoint para actualizar un personaje existente
+//Endpoint para actualizar un personaje existente y ejecuto la función authenticateToken para que sólo puedan modificar un personaje existente los usuarios que están registrados y han hecho login, es decir, que tienen un token válido
 server.put('/characters/:id', authenticateToken, async (req, res) => {
     try {
         const conn = await getConnection();
@@ -126,7 +126,7 @@ server.put('/characters/:id', authenticateToken, async (req, res) => {
   });
 
 
-//Endpoint para eliminar un personaje
+//Endpoint para eliminar un personaje y ejecuto la función authenticateToken para que sólo puedan eliminar un personaje los usuarios que están registrados y han hecho login, es decir, que tienen un token válido
 server.delete('/characters/:id', authenticateToken, async (req, res) => {
     try {
         const conn = await getConnection();
@@ -155,7 +155,7 @@ server.delete('/characters/:id', authenticateToken, async (req, res) => {
     const [emailResult] = await conn.query(selectEmail, [email]);
 
     if (emailResult.length === 0) {
-      const hasshedPassword = await bcrypt.hash(password, 10); //encriptar la contraseña del usuario
+      const hasshedPassword = await bcrypt.hash(password, 10); //Con hash se encripta la contraseña del usuario
       console.log(hasshedPassword);
       const insertUser =
         'INSERT INTO usuarios_db (email, name, address, password ) VALUES (?,?,?,?)';
@@ -182,7 +182,7 @@ server.delete('/characters/:id', authenticateToken, async (req, res) => {
       if (isSamePassword) {
         const infoToken = { email: resultUser[0].email, id: resultUser[0].id };
         const token = jwt.sign(infoToken, 'draco dormiens nunquam titillandus', {
-          expiresIn: '1h',
+          expiresIn: '1m',
         });
         res.status(201).json({ succes: true, token: token });
       } else {
@@ -193,6 +193,7 @@ server.delete('/characters/:id', authenticateToken, async (req, res) => {
     }
   });
 
+  //Endpoint para el cierre de sesión de un usuario
   server.put("/logout", function (req, res) {
         const authHeader = req.headers["authorization"];
         jwt.sign(authHeader, "", { expiresIn: 1 } , (logout, err) => {
@@ -205,7 +206,7 @@ server.delete('/characters/:id', authenticateToken, async (req, res) => {
         });
     });
 
-  //Autenticación del token
+  //Función para la autenticación del token
   function authenticateToken(req, res, next) {
     const tokenString = req.headers.authorization;
     if (!tokenString) {
@@ -215,7 +216,6 @@ server.delete('/characters/:id', authenticateToken, async (req, res) => {
         });
     } else {
         try {
-            //const token = tokenString.split(' ')[1];
             const verifiedToken = jwt.verify(tokenString, 'draco dormiens nunquam titillandus');
             req.userInfo = verifiedToken;
         } catch (error) {
@@ -228,6 +228,7 @@ server.delete('/characters/:id', authenticateToken, async (req, res) => {
     }
 };
 
+//Endpoint para poder ver los usuarios que ya hay registrados en nuestra BD
 server.get('/users', authenticateToken, async (req, res) => {
     try {
         const conn = await getConnection();
