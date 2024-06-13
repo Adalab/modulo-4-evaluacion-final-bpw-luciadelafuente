@@ -50,6 +50,26 @@ server.get('/characters', async (req, res) => {
     }
   });
 
+// Endpoint para buscar un personaje por id 
+server.get('/characters/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const conn = await getConnection();
+      const select = 'select * from characters where id = ?';
+      const [result] = await conn.query(select, [id]); 
+      if (result.length === 0) {
+        res.status(400).json({ message: 'El id que buscas no existe en nuestra base de datos' });
+      } else {
+        res.status(200).json(result[0]);
+      };
+      await conn.end();
+    } catch (error) {
+      res.status(400).json({
+        success: false
+        });
+    }
+  });
+
 //Endpoint para añadir un nuevo personaje y ejecuto la función authenticateToken para que sólo puedan crear un personaje nuevo los usuarios que están registrados y han hecho login, es decir, que tienen un token válido
 server.post('/characters', authenticateToken, async (req, res) => {
     try {
@@ -74,26 +94,6 @@ server.post('/characters', authenticateToken, async (req, res) => {
         });
     }
 });
-
-// Endpoint para buscar un personaje por id 
-server.get('/characters/:id', async (req, res) => {
-    try {
-      const { id } = req.params;
-      const conn = await getConnection();
-      const select = 'select * from characters where id = ?';
-      const [result] = await conn.query(select, [id]); 
-      if (result.length === 0) {
-        res.status(400).json({ message: 'El id que buscas no existe en nuestra base de datos' });
-      } else {
-        res.status(200).json(result[0]);
-      };
-      await conn.end();
-    } catch (error) {
-      res.status(400).json({
-        success: false
-        });
-    }
-  });
 
 //Endpoint para actualizar un personaje existente y ejecuto la función authenticateToken para que sólo puedan modificar un personaje existente los usuarios que están registrados y han hecho login, es decir, que tienen un token válido
 server.put('/characters/:id', authenticateToken, async (req, res) => {
@@ -182,7 +182,7 @@ server.delete('/characters/:id', authenticateToken, async (req, res) => {
       if (isSamePassword) {
         const infoToken = { email: resultUser[0].email, id: resultUser[0].id };
         const token = jwt.sign(infoToken, 'draco dormiens nunquam titillandus', {
-          expiresIn: '1m',
+          expiresIn: '1h',
         });
         res.status(201).json({ succes: true, token: token });
       } else {
