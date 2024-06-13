@@ -9,7 +9,7 @@
 - Endpoints.
 
 ## 💡​ **Introducción**
-En este repositorio puedes encontrar un proyecto que nos proporciona una API REST para poder emplear una base de datos de los principales personajes de la famosa saga Harry Potter. Aquellos usuarios que quieran van a poder emplear esta API van a poder consultar todos los personajes, buscar personajes por id, modificar personajes y eliminarlos. Además van a encontrar la opción de que un usuario se registre, y pueda hacer un inicio y un cierre de sesión.
+En este repositorio puedes encontrar un proyecto que nos proporciona una API REST para poder emplear una base de datos de los principales personajes de la famosa saga Harry Potter. Aquellos usuarios que quieran emplear esta API van a poder consultar todos los personajes, buscar personajes por id, modificar personajes y eliminarlos. Además van a encontrar la opción de que un usuario se registre, y pueda hacer un inicio y un cierre de sesión.
 
 ## ​🔧​ ​​**Instalación**
 
@@ -58,7 +58,7 @@ Para ejecutar el backend de la API de Harry Potter de manera local, siga los sig
 - Obtiene todos los personajes de la base de datos.
 
 ### Obtener un personaje a través de su id
-- **Endpoint:** `/pokemon/:id`
+- **Endpoint:** `/characters/:id`
 - **Method:** `GET`
 - Obtiene un personaje a través de su id.
 
